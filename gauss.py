@@ -5,7 +5,6 @@ from utils import rank_from_row
 
 
 def gauss(data, comm, n):
-    print("data:", data)
     """
     Inverse rows using Gauss-Jordan elimination
     :param data: list of rows, with row index as last element of row
@@ -70,7 +69,6 @@ def gauss(data, comm, n):
         rank = rank_from_row(n, comm.size, i)
 
         if i in indexes:
-            print( rhs[i],lhs[i, i], lhs[i] )
             rhs[i] /= lhs[i, i]
             lhs[i] /= lhs[i, i]
             _send(i, rank)

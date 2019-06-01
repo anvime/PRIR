@@ -1,5 +1,5 @@
 import sys
-
+import time
 from numpy import linalg as la
 
 from gauss import *
@@ -13,20 +13,21 @@ def str_to_row(s):
 
 
 def _do_inversion(com, rws):
-    """
-    Print formatting messages and call gauss elimination
-    :param com: communicator
-    :param rws: rows
-    :return: inversed rows
-    """
     print(formatting(com.rank, format_action('receive', rows=rws)))
-    print(">>>>rws:", rws)
     inv = gauss(np.array(rws, dtype=np.float64), com, n)
-
     print(formatting(com.rank, format_action('inverse', rows=inv)))
-
     return inv
 
+class Timer(object):
+    def __init__(self, message):
+        self.message = message
+        self.start = time.time()
+
+    def finish(self):
+        print("-" * 20 + "| {0}: {1:.3f} s |".format(self.message, (time.time() - self.start)) + "-" * 20)
+
+
+time_count = Timer("time_count")
 
 comm = MPI.COMM_WORLD
 master = 0
@@ -39,9 +40,6 @@ if comm.rank == master:
     for line in inp:
         A.append(str_to_row(line))
         b.append([int(x) for x in line.split()][-1])
-
-    print("a: ", A)
-    print("b:", b)    
 
     a = np.array(A, dtype=np.float64)
     det = la.det(np.array(A))
@@ -74,25 +72,25 @@ if comm.rank == master:
     A_inv = np.delete(A_inv, -1, 1)
     print(formatting(comm.rank, format_action('merge results')))
     t_inv.finish()
+    print("MPI output:")
+    print(A_inv)
     write_matrix(A_inv, out)
 
     x = np.dot(A_inv, b)
     print(formatting(comm.rank, format_action('product A_inv on b', x=x.tolist())))
+    print(x)
     out.write(('{}\n'+'{:.3f}\t'*len(x)).format(1, *x))
 
     t.finish()
+    time_count.finish()
 else:
     t = Timer('proc{}'.format(comm.rank))
     n = comm.bcast(None, root=master)
     step = n / comm.size
-
     if not step:
         sys.exit()
-
     for i in range(int(step)):
         rows.append(comm.recv(source=master))
-
     inversed = _do_inversion(comm, rows)
-
     comm.send(inversed, dest=master)
     t.finish()
