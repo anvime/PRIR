@@ -56,18 +56,12 @@ if comm.rank == master:
     comm.bcast(n, root=master)
 
     step, master_count = get_step_and_master_count(n, comm.size)
-    #import ipdb; ipdb.set_trace()
-    print("A!!", A, "mcount", master_count)
     rows = [A[i] + [i] for i in range(master_count)]
-    print(">>rows: ", rows)
     cur = master_count
     for proc in range(1, comm.size):
         for i in range(int(step)):
-
-            print("in", A[int(cur + i)] + [cur + i])
             comm.send(A[int(cur + i)] + [cur + i], dest=proc)  # send row with index as last element
         cur += step
-    print(">>>>>rows: ", rows)
 
     inversed = _do_inversion(comm, rows)
 

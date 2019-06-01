@@ -51,19 +51,16 @@ def gauss(data, comm, n):
         comm.Bcast([r_row, MPI.DOUBLE], root=rnk)
 
         _eliminate(l_row, r_row, indx)
-    #import ipdb; ipdb.set_trace()
     indexes = []
 
     lhs = np.zeros((n, n))
     rhs = np.identity(n)
 
-    print("d:", data)
     for line in data:
         ind = int(line[-1])
         ii = 1#[line.split()][-1]
         indexes.append(ind)
         lhs[ind] = line[:-1]
-        print("line: ", line," typeline: ", type(line),"ind:", ind, "ii:", ii)
 
 
     l_row = np.zeros(n, dtype=np.float64)
