@@ -1,10 +1,14 @@
+# Parallel programming 
 ## Jacobi
+
+#### Sequential
 For sequential jacobi:
 python3 jacobi_sequential.pl {input.txt}
 
 If input_file is not provided then the script automatically looks for "input.txt"
 
 
+#### MPI
 For parallel jacobi:
 mpiexec --hostfile hostfile -n {no_of_proccess} python3 jacobi_mpi.py
 
@@ -41,3 +45,4 @@ array([ 2.7826087 , -0.13043478])
 execution time :
 0.003748178482055664
 ```
+## Gauss
