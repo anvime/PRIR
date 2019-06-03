@@ -1,3 +1,2 @@
 #!/bin/bash
-#python gen.py "$1" "$2"
-mpirun -np "$3" python solver.py
+mpirun -np "$1" python gauss_jordan_mpi.py

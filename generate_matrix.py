@@ -15,10 +15,13 @@ except (IndexError, ValueError) as e:
     print(__doc__)
     exit(1)
 
-f = open('input.txt', 'w')
+name = 'input_{n}.txt'.format(n=n)
+f = open(name, 'w')
 f.write('{}\n'.format(n))
 for i in range(n):
     for j in range(n+1):
         template = '{} ' if j != n else '{}\n'
         f.write(template.format(random.randint(1, m)))
 f.close()
+
+print("ok")
